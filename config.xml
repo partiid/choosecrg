@@ -3,7 +3,8 @@
 	<name>choosecrg</name>
 	<displayName><![CDATA[CRG - Customer Registration Group]]></displayName>
 	<version><![CDATA[1.0.0]]></version>
-	<description><![CDATA[Allows customers to choose a group on sign up.Approve customer requests from back office to assign them to their desired group.]]></description>
+	<description><![CDATA[Allows customers to choose a group on sign up.
+         Approve customer requests from back office to assign them to their desired group.]]></description>
 	<author><![CDATA[Marek Łysiak]]></author>
 	<tab><![CDATA[others]]></tab>
 	<is_configurable>1</is_configurable>

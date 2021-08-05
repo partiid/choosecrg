@@ -29,11 +29,13 @@ function getCustomerGroups($choosen = null)
     if (!$choosen) {
         $sql = 'SELECT DISTINCT 
     `'._DB_PREFIX_.'group`.`id_group`, `group_name`.`name` FROM `'._DB_PREFIX_.'group` 
-    INNER JOIN `'._DB_PREFIX_.'group_lang` as group_name on `group_name`.`id_group` = `'._DB_PREFIX_.'group`.`id_group`';
+    INNER JOIN `'._DB_PREFIX_.'group_lang` as group_name on 
+    `group_name`.`id_group` = `'._DB_PREFIX_.'group`.`id_group`';
     } else {
         $sql = 'SELECT DISTINCT 
         `'._DB_PREFIX_.'group`.`id_group`, `group_name`.`name` FROM `'._DB_PREFIX_.'group` 
-        INNER JOIN `'._DB_PREFIX_.'group_lang` as group_name on `group_name`.`id_group` = `'._DB_PREFIX_.'group`.`id_group` WHERE `group_name`.`id_group` IN('. $choosen.')' ;
+        INNER JOIN `'._DB_PREFIX_.'group_lang` as group_name on
+        `group_name`.`id_group` = `'._DB_PREFIX_.'group`.`id_group` WHERE `group_name`.`id_group` IN('. $choosen.')' ;
     }
 
 
@@ -62,12 +64,12 @@ function getCheckboxValue($name, $count)
 }
 
 //function to deactivate user in order to approve it in controller
- function deactivateCustomer($params)
+function deactivateCustomer($params)
 {
      $db = Db::getInstance();
      $customer_id = $params['newCustomer']->id;
 
      return (bool) $db->update('customer', array(
         'active' => 0
-    ), 'id_customer = '.$customer_id);
+     ), 'id_customer = ' . $customer_id);
 }

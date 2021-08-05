@@ -36,14 +36,12 @@ include(dirname(__FILE__).'/sql/tools.php');
 
 class Choosecrg extends Module
 {
-    
-
     protected $config_form = false;
 
     private $config_fields = array(
         'CRG_CHOOSE_ALLOWED_GROUPS',
         'CRG_NOTIFICATIONS_EMAIL'
-     ); 
+     );
    
     
 
@@ -78,11 +76,9 @@ class Choosecrg extends Module
      */
     public function install()
     {
-         
-
-         foreach($this->config_fields as $default) {
-             Configuration::set($default, ' '); 
-         }; 
+        foreach ($this->config_fields as $default) {
+            Configuration::set($default, ' ');
+        };
 
         
 
@@ -97,27 +93,24 @@ class Choosecrg extends Module
             $this->registerHook('validateCustomerFormFields') &&
             $this->registerHook('actionCustomerAccountAdd') &&
             $this->registerHook('actionCustomerAccountUpdate') &&
-            $this->registerHook(ThemeCatalogInterface::LIST_MAIL_THEMES_HOOK) && 
+            $this->registerHook(ThemeCatalogInterface::LIST_MAIL_THEMES_HOOK) &&
             $this->installTab();
     }
     public function installTab()
     {
+        $tab_id= Tab::getIdFromClassName('Choosecrg');
 
-        $tab_id= Tab::getIdFromClassName('Choosecrg'); 
-
-        if($tab_id == false){
-            $tab = new Tab(); 
-            $tab->module = $this->name; 
-            $tab->class_name = 'AdminCrg'; 
+        if ($tab_id == false) {
+            $tab = new Tab();
+            $tab->module = $this->name;
+            $tab->class_name = 'AdminCrg';
             $tab->name[$this->context->language->id] = $this->l('Customer registrations approval');
-            $tab->parent_class_name = 'AdminParentCustomer';            
-            $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentCustomer'); 
+            $tab->parent_class_name = 'AdminParentCustomer';
+            $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentCustomer');
     
-            $tab->add(); 
+            $tab->add();
             return $tab->save();
         }
-         
-
     }
     public function uninstallTab()
     {
@@ -133,8 +126,8 @@ class Choosecrg extends Module
    
     public function uninstall()
     {
-        foreach($this->config_fields as $default){
-            Configuration::deleteByName($default); 
+        foreach ($this->config_fields as $default) {
+            Configuration::deleteByName($default);
         }
 
         include(dirname(__FILE__).'/sql/uninstall.php');
@@ -165,8 +158,6 @@ class Choosecrg extends Module
                 '',
                 $this->name
             ));
-
-
         }
     }
     
@@ -222,21 +213,22 @@ class Choosecrg extends Module
      */
     protected function getConfigForm()
     {
-        
-        $customer_groups = getCustomerGroups(); 
+        $customer_groups = getCustomerGroups();
 
-        $groups = array_map(function($object) {return ['id' => $object->id_group, 'name' => $object->name, 'val' => $object->id_group] ;}, $customer_groups); //change to array of arrays
+        $groups = array_map(function ($object) {
+            return ['id' => $object->id_group, 'name' => $object->name, 'val' => $object->id_group] ;
+        }, $customer_groups); //change to array of arrays
         
         // $groups_checkboxes[] = array(
         //     'type' => 'checkbox',
         //     'required' => true,
         //     'multiple' => true,
-        //     'desc' => $this->l('Jakie grupy klientów klienci mogą wybrać?'), 
-        //     'values' => 
+        //     'desc' => $this->l('Jakie grupy klientów klienci mogą wybrać?'),
+        //     'values' =>
         //     array (
         //         'query' => $groups,
         //         'id' => 'id',
-        //         'name' => 'name', 
+        //         'name' => 'name',
         //         'val' => 'val'
                 
         //     ),
@@ -259,20 +251,20 @@ class Choosecrg extends Module
                         'type' => 'checkbox',
                         'required' => true,
                         'multiple' => true,
-                        'desc' => $this->l('Which customer groups may customers choose on registration?'), 
+                        'desc' => $this->l('Which customer groups may customers choose on registration?'),
                         'label' => $this->l('Customer groups'),
-                        'values' => 
-                        array (
+                        'values' =>
+                        array(
                             'query' => $groups,
                             'id' => 'id',
-                            'name' => 'name', 
+                            'name' => 'name',
                             'val' => 'val'
                             
                         ),
                         'name' => 'CRG_CHOOSE_ALLOWED_GROUPS',
                         'id' => 'id'
-                    ), 
-                 array (
+                    ),
+                 array(
                     'type' => 'text',
                     'label' => $this->l('Email Address'),
                     'desc' => 'Email to receive notifications about new request',
@@ -293,34 +285,33 @@ class Choosecrg extends Module
      */
     protected function getConfigFormValues()
     {
-        $values = array(); 
+        $values = array();
 
-        $customer_groups = getCustomerGroups(); 
-        $groups = array_map(function($object) {return ['id' => $object->id_group, 'name' => $object->name, 'val' => $object->id_group] ;}, $customer_groups); //change to array of arrays
+        $customer_groups = getCustomerGroups();
+        $groups = array_map(function ($object) {
+            return ['id' => $object->id_group, 'name' => $object->name, 'val' => $object->id_group] ;
+        }, $customer_groups); //change to array of arrays
         
-        $allowed_groups = explode (',', Configuration::get('CRG_CHOOSE_ALLOWED_GROUPS')); 
+        $allowed_groups = explode(',', Configuration::get('CRG_CHOOSE_ALLOWED_GROUPS'));
         
         //handling checkboxes values
-        for ($i=0; $i < count($groups); $i++) { 
-           foreach($allowed_groups as $group){
-               $values['CRG_CHOOSE_ALLOWED_GROUPS_'.$group] = true; 
-           }
+        for ($i=0; $i < count($groups); $i++) {
+            foreach ($allowed_groups as $group) {
+                $values['CRG_CHOOSE_ALLOWED_GROUPS_'.$group] = true;
+            }
         };
 
-        foreach($this->config_fields as $default){
-            array_push($values, $values[$default] = Configuration::get($default)); 
+        foreach ($this->config_fields as $default) {
+            array_push($values, $values[$default] = Configuration::get($default));
         }
         
 
         
-         return $values; 
-         /*array (
-             'CRG_CHOOSE_ALLOWED_GROUPS' => Configuration::get('CRG_CHOOSE_ALLOWED_GROUPS'),
-             'CRG_NOTIFICATIONS_EMAIL' => Configuration::get('CRG_NOTIFICATIONS_EMAIL'),
-         ); */ 
-
-         
-
+        return $values;
+        /*array (
+            'CRG_CHOOSE_ALLOWED_GROUPS' => Configuration::get('CRG_CHOOSE_ALLOWED_GROUPS'),
+            'CRG_NOTIFICATIONS_EMAIL' => Configuration::get('CRG_NOTIFICATIONS_EMAIL'),
+        ); */
     }
 
     /**
@@ -328,22 +319,23 @@ class Choosecrg extends Module
      */
     protected function postProcess()
     {
-
-        $customer_groups = getCustomerGroups(); 
+        $customer_groups = getCustomerGroups();
         
         //$this->getConfigFormValues();
         
         //handling checkboxes
-        $groups = array_map(function($object) {return ['id' => $object->id_group, 'name' => $object->name, 'val' => $object->id_group] ;}, $customer_groups); //change to array of arrays
+        $groups = array_map(function ($object) {
+            return ['id' => $object->id_group, 'name' => $object->name, 'val' => $object->id_group] ;
+        }, $customer_groups); //change to array of arrays
 
-        $cgr_cag = getCheckboxValue('CRG_CHOOSE_ALLOWED_GROUPS', count($groups)); 
+        $cgr_cag = getCheckboxValue('CRG_CHOOSE_ALLOWED_GROUPS', count($groups));
 
         //todo - sort out defaults handling
-        $notification_email = Tools::getValue('CRG_NOTIFICATIONS_EMAIL'); 
+        $notification_email = Tools::getValue('CRG_NOTIFICATIONS_EMAIL');
 
 
         Configuration::updateValue($cgr_cag->setting_name, join(",", $cgr_cag->setting_value));
-        Configuration::updateValue('CRG_NOTIFICATIONS_EMAIL', $notification_email); 
+        Configuration::updateValue('CRG_NOTIFICATIONS_EMAIL', $notification_email);
        
         
 
@@ -355,7 +347,7 @@ class Choosecrg extends Module
                 Configuration::updateValue($key, Tools::getValue($key));
               }
 
-            } */ 
+            } */
         //  }
     }
 
@@ -370,11 +362,11 @@ class Choosecrg extends Module
                 '{message}' => 'New customer has signed up. His request is awaiting your approval' // email content
             ),
             Configuration::get('CRG_NOTIFICATIONS_EMAIL'), // receiver email address
-            NULL, //receiver name
-            NULL, //from email address
-            NULL,  //from name
-            NULL, //file attachment
-            NULL, //mode smtp
+            null, //receiver name
+            null, //from email address
+            null,  //from name
+            null, //file attachment
+            null, //mode smtp
             _PS_MODULE_DIR_ . 'choosecrg/mails' //custom template path
         );
     }
@@ -396,11 +388,9 @@ class Choosecrg extends Module
      */
     public function hookHeader()
     {
-        $this->context->controller->addJqueryUI('ui.dialog'); 
+        $this->context->controller->addJqueryUI('ui.dialog');
         $this->context->controller->addJS($this->_path.'/views/js/front.js');
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');
-      
-        
     }
 
    
@@ -409,8 +399,6 @@ class Choosecrg extends Module
     {
         
         //return $this->display(__FILE__, 'customerForm.tpl');
-        
-    
     }
 
     //function to add custom field in customer form
@@ -419,110 +407,103 @@ class Choosecrg extends Module
 
     
 
-       //getting the allowed groups from the config to display on front 
-    $selected_groups = Configuration::get('CRG_CHOOSE_ALLOWED_GROUPS'); //selected group from the backoffice by admin to allow customers choose from
+       //getting the allowed groups from the config to display on front
+       //selected group from the backoffice by admin to allow customers choose from
+        $selected_groups = Configuration::get('CRG_CHOOSE_ALLOWED_GROUPS');
+        
 
-    $customer_groups = getCustomerGroups($selected_groups); //get customer groups from database 
+        $customer_groups = getCustomerGroups($selected_groups); //get customer groups from database
 
-    $groups = array_map(function($object) {return [$object->id_group => $object->name] ;}, $customer_groups); 
+        $groups = array_map(function ($object) {
+            return [$object->id_group => $object->name] ;
+        }, $customer_groups);
    
-    $merged = call_user_func_array("array_merge", $groups); //merge array 
+        $merged = call_user_func_array("array_merge", $groups); //merge array
      
-    $to_reduce = array_replace($merged, $groups); 
+        $to_reduce = array_replace($merged, $groups);
     
-     $reduced_result = array_reduce($to_reduce, function($id, $name) {
-        return $id + $name;
-    }, []);
+        $reduced_result = array_reduce($to_reduce, function ($id, $name) {
+            return $id + $name;
+        }, []);
     
     
     
-    //create the extra field 
-       $extra_fields = array(); 
-       $extra_fields['group'] = (new FormField)
-       ->setName('group')
-       ->setAvailableValues($reduced_result)
-       ->setType('radio-buttons')
-       ->setLabel($this->l('Typ konta'))
-       ->setRequired(true); 
+        //create the extra field
+        $extra_fields = array();
+        $extra_fields['group'] = (new FormField)
+        ->setName('group')
+        ->setAvailableValues($reduced_result)
+        ->setType('radio-buttons')
+        ->setLabel($this->l('Typ konta'))
+        ->setRequired(true);
 
     
-       return $extra_fields;
+        return $extra_fields;
     }
     //validating the new field
     public function hookValidateCustomerFormFields($params)
     {
-       
-     
     }
 
     //called after account creation - insert data into requests table
     public function hookActionCustomerAccountAdd($params)
     {
-        $db = Db::getInstance(); 
+        $db = Db::getInstance();
 
 
-       $customer_id = $params['newCustomer']->id; 
-       $customer_name = $params['newCustomer']->company; 
-       $customer_siret = $params['newCustomer']->siret; 
+        $customer_id = $params['newCustomer']->id;
+        $customer_name = $params['newCustomer']->company;
+        $customer_siret = $params['newCustomer']->siret;
        
 
-       $group = Tools::getValue('group', ''); 
+        $group = Tools::getValue('group', '');
 
         //get customergroup name
-        $group_name  = $db->executeS('SELECT name FROM '. _DB_PREFIX_ . 'group_lang WHERE id_group= ' . $group.';'); 
+        $group_name  = $db->executeS('SELECT name FROM '. _DB_PREFIX_ . 'group_lang WHERE id_group= ' . $group.';');
         
 
         //deactive customer on registration and redirect to homepage to set the cookie and display notification
-         deactivateCustomer($params);
+        deactivateCustomer($params);
 
-         //logout customer
-         $params['newCustomer']->logout(); 
+        //logout customer
+        $params['newCustomer']->logout();
          
        
-        $this->context->cookie->__set('displaySignUpNotification', '1'); 
+        $this->context->cookie->__set('displaySignUpNotification', '1');
 
-        $this->sendMail(); 
+        $this->sendMail();
 
 
-       return (bool) $db->insert('crgRequests', [
-           'id_customer' => $customer_id,
-           'id_group' => $group,
-           'approved' => 0,
-           'group_name' => $group_name[0]['name'],
-           'customer_name' => $customer_name,
-           'customer_siret' => $customer_siret
-       ]
-           ); 
-
-        
+        return (bool) $db->insert(
+            'crgRequests',
+            [
+            'id_customer' => $customer_id,
+            'id_group' => $group,
+            'approved' => 0,
+            'group_name' => $group_name[0]['name'],
+            'customer_name' => $customer_name,
+            'customer_siret' => $customer_siret
+            ]
+        );
     }
-    //handle action when customer is trying to change the account type 
+    //handle action when customer is trying to change the account type
     public function hookActionCustomerAccountUpdate($params)
     {
-        $this->context->cookie->__set('displayErrorNotification', '1'); 
-        
+        $this->context->cookie->__set('displayErrorNotification', '1');
     }
 
 
-    //used to display modal notifications after redirect to home and 
+    //used to display modal notifications after redirect to home and
     public function hookDisplayHome()
     {
         //if cookie after registration isset
-        if($this->context->cookie->__isset('displaySignUpNotification')){
+        if ($this->context->cookie->__isset('displaySignUpNotification')) {
             $this->context->cookie->__unset('displaySignUpNotification');
             return $this->display(__FILE__, 'signUpNotification.tpl');
         }
-        if($this->context->cookie->__isset('displayErrorNotification')){
+        if ($this->context->cookie->__isset('displayErrorNotification')) {
             $this->context->cookie->__unset('accountUpdateNotification');
-            return $this->display(__FILE__, 'accountUpdateNotification.tpl'); 
+            return $this->display(__FILE__, 'accountUpdateNotification.tpl');
         }
-        
-        
-
-
     }
-   
-
-    
-     
 }
