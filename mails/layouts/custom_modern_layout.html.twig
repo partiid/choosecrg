@@ -1,0 +1,16 @@
+{% extends '@MailThemes/modern/components/layout.html.twig' %}
+
+{% block content %}
+  <table width="100%">
+    <tr>
+      <td align="center" class="titleblock">
+        <font size="2" face="{{ languageDefaultFont }}Open-sans, sans-serif" color="#555454">
+          <span class="title">{{ 'A new customer has signed up. His request is awaiting your approval'|trans({}, 'EmailsBody', locale)|raw }}</span>
+        </font>
+      </td>
+    </tr>
+    <tr>
+      <td class="space_footer">&nbsp;</td>
+    </tr>
+  </table>
+{% endblock %}

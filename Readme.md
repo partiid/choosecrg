@@ -1,0 +1,1 @@
+# CRG - Allow clients to choose group on register
