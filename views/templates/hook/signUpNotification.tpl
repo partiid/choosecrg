@@ -1,4 +1,4 @@
-/**
+{**
 * 2007-2021 PrestaShop
 *
 * NOTICE OF LICENSE
@@ -21,7 +21,7 @@
 *  @copyright 2021 Marek Łysiak
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
-*/
+**}
 
 <div id="modal-center" class="uk-flex-top" uk-modal>
     <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical uk-text-center">

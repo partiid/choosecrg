@@ -26,9 +26,3 @@
 * to avoid any conflicts with others containers.
 */
 
-$(document).ready(()=>{
-    setTimeout(()=>{
-        alert($('.radio-inline')[0].innerHTML); 
-    }, 300);
-    
-})

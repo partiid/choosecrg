@@ -60,11 +60,15 @@ class AdminCrgController extends ModuleAdminController
     public function renderList()
     {
         $this->addRowAction('edit');
+        $this->addRowAction('delete');
            
 
-        $this->bulk_actions = array(
-               
-            );
+        // $this->bulk_actions = array(
+        //     'delete' => array(
+        //         'text' => $this->l('Delete selected'),
+        //         'confirm' => $this->l('Delete selected items?')
+        //     )
+        // );
         $this->fields_list = array(
                 'id_request' => array(
                     'title' => $this->l('ID'),
@@ -160,28 +164,49 @@ class AdminCrgController extends ModuleAdminController
     //handle setting form for record
     public function postProcess()
     {
-        //approve request
-        if ($this->approveRequest() == true) {
-            $this->activateCustomer();
+        //delete request
+        
+        $this->deleteRequest();
+        if (Tools::isSubmit('approveCrgRequest')) {
+            //approve request
+            if ($this->approveRequest() == true) {
+                $this->activateCustomer();
 
-            Mail::Send(
-                (int)(Configuration::get('PS_LANG_DEFAULT')), // defaut language id
+                Mail::Send(
+                    (int)(Configuration::get('PS_LANG_DEFAULT')), // defaut language id
                 'requestApproved', // email template file to be use
                 'Twoja prośba o rejestrację została zaakceptowana.', // email subject
                 array(
                     '{email}' => Configuration::get('PS_SHOP_EMAIL'), // sender email address
-                    '{message}' => '' // email content
+                    '{message}' => 'Twoja prośba o rejestrację została zaakceptowana.' // email content
                 ),
-                Tools::getValue('customer_email'), // receiver email address
+                    Tools::getValue('customer_email'), // receiver email address
                 null, //receiver name
                 null, //from email address
                 null,  //from name
                 null, //file attachment
                 null, //mode smtp
                 _PS_MODULE_DIR_ . 'choosecrg/mails' //custom template path
-            );
-        } elseif ($this->approveRequest() == false) {
-            $this->deactivateCustomer();
+                );
+            } elseif ($this->approveRequest() == false) {
+                $this->deactivateCustomer();
+                Mail::Send(
+                    (int)(Configuration::get('PS_LANG_DEFAULT')), // defaut language id
+                'requestDenied', // email template file to be use
+                'Twoja prośba o rejestrację została odrzucona.', // email subject
+                array(
+                    '{email}' => Configuration::get('PS_SHOP_EMAIL'), // sender email address
+                    '{message}' => 'Twoja prośba o rejestrację została odrzucona' // email content
+                ),
+                    Tools::getValue('customer_email'), // receiver email address
+                null, //receiver name
+                null, //from email address
+                null,  //from name
+                null, //file attachment
+                null, //mode smtp
+                _PS_MODULE_DIR_ . 'choosecrg/mails' //custom template path
+                );
+            }
         }
     }
 
@@ -227,11 +252,11 @@ class AdminCrgController extends ModuleAdminController
         $db = Db::getInstance();
 
         $q = 'SELECT email FROM ' ._DB_PREFIX_ .'customer WHERE id_customer= ' . $customer_id;
-        print_r($db->executeS($q));
+        
         return $db->executeS($q)[0]['email'];
     }
       
-        
+    //function to activate a customer
     private function activateCustomer()
     {
         $db = Db::getInstance();
@@ -271,6 +296,40 @@ class AdminCrgController extends ModuleAdminController
                 ), 'id_customer='.$id_customer);
         }
     }
+    //function to delete request from a table
+    private function deleteRequest()
+    {
+        $db = Db::getInstance();
+
+        if (Tools::isSubmit('deletecrgRequests')) {
+            $id_request = Tools::getValue('id_request');
+            
+            $customer_id = $this->getCustomerId($id_request); 
+            $customer_email = $this->getCustomerEmail($customer_id); 
+            
+            $db->delete('customer', 'id_customer='.$customer_id);
+
+            Mail::Send(
+                (int)(Configuration::get('PS_LANG_DEFAULT')), // defaut language id
+            'requestDenied', // email template file to be use
+            'Twoja prośba o rejestrację została odrzucona.', // email subject
+            array(
+                '{email}' => Configuration::get('PS_SHOP_EMAIL'), // sender email address
+                '{message}' => 'Twoja prośba o rejestrację została odrzucona' // email content
+            ),
+            $customer_email,
+            null, //receiver name
+            null, //from email address
+            null,  //from name
+            null, //file attachment
+            null, //mode smtp
+            _PS_MODULE_DIR_ . 'choosecrg/mails' //custom template path
+            );
+
+            return (bool) $db->delete('crgRequests', 'id_request='.$id_request);
+        }
+    }
+
     private function approveRequest()
     {
         $db = Db::getInstance();
