@@ -7,4 +7,4 @@ This module also adds customer sign up approval so you can now deny or accept wh
 
 Email notifications enabled with custom tab etc. 
 
-Regular price is 69.99$ enjoy free of charge for now. 
+Regular price we sell this module is 69.99$ enjoy it free of charge for now. 
